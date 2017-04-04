@@ -89,7 +89,9 @@ class MentionInsertionLogic {
         final int cursorPosition = editText.getSelectionEnd();
         final String text = editText.getText().toString();
         final String textBefore = text.substring(0, cursorPosition);
-        final int start = textBefore.lastIndexOf("@");
+        final int index = textBefore.lastIndexOf(" @");
+        final int start = index == -1 ? 0 : index -1; // @ is first otherwise Remove space
+
         final String allTextAfterCursor = text.substring(cursorPosition, text.length());
 
         final String remainingWord = StringUtils.substringBefore(allTextAfterCursor, " ");

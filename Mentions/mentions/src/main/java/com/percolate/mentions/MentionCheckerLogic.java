@@ -29,7 +29,7 @@ class MentionCheckerLogic {
     void setMaxCharacters(final int maxCharacters) {
         if (maxCharacters <= 0) {
             throw new IllegalArgumentException("Maximum number of characters must be greater " +
-                    "than 0.");
+                "than 0.");
         }
         this.maxCharacters = maxCharacters;
     }
@@ -61,28 +61,20 @@ class MentionCheckerLogic {
             final String remainingWord = StringUtils.substringBefore(allTextAfterCursor, " ");
             final String AllTextBeforeWithFullWord = allTextBeforeCursor + remainingWord;
 
-            String token = " @";
+            String providedSearchText;
 
-            int index = AllTextBeforeWithFullWord.lastIndexOf("@");
-            if(index == 0) { // Only one and start with
-                token = "@";
+            int index = AllTextBeforeWithFullWord.lastIndexOf(" @");
+            if(index != -1) {
+                // Case "@Name how you @d" Will match the last "@d"
+                providedSearchText = StringUtils.substringAfterLast(AllTextBeforeWithFullWord, " @");
+            } else {
+                // Case "@@name" Will remove the first '@'
+                providedSearchText = AllTextBeforeWithFullWord.substring(1);;
             }
 
-            final String providedSearchText = StringUtils.substringAfterLast(AllTextBeforeWithFullWord, token);
-
             // check search text is within <code>maxCharacters</code> and begins with a
-            // alpha numeric char.
-            if (searchIsWithinMaxChars(providedSearchText, maxCharacters)
-                    && searchBeginsWithAlphaNumericChar(providedSearchText)) {
-
-                final int atSymbolPosition = StringUtils.lastIndexOf(allTextBeforeCursor, "@");
-
-                // check if search text is first in the view or has a space beforehand if there are
-                // more characters in the view.
-                if (atSymbolPosition == 0
-                        || spaceBeforeAtSymbol(allTextBeforeCursor, atSymbolPosition)) {
-                    queryToken = providedSearchText;
-                }
+            if(searchIsWithinMaxChars(providedSearchText, maxCharacters)) {
+                queryToken = providedSearchText;
             }
         }
 
