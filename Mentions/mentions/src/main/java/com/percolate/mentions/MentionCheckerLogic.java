@@ -61,7 +61,14 @@ class MentionCheckerLogic {
             final String remainingWord = StringUtils.substringBefore(allTextAfterCursor, " ");
             final String AllTextBeforeWithFullWord = allTextBeforeCursor + remainingWord;
 
-            final String providedSearchText = StringUtils.substringAfterLast(AllTextBeforeWithFullWord, "@");
+            String token = " @";
+
+            int index = AllTextBeforeWithFullWord.lastIndexOf("@");
+            if(index == 0) { // Only one and start with
+                token = "@";
+            }
+
+            final String providedSearchText = StringUtils.substringAfterLast(AllTextBeforeWithFullWord, token);
 
             // check search text is within <code>maxCharacters</code> and begins with a
             // alpha numeric char.
