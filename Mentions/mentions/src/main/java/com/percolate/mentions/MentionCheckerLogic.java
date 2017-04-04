@@ -8,6 +8,9 @@ import android.widget.EditText;
  */
 class MentionCheckerLogic {
 
+    static final char AT_EN = '@';
+    static final char AT_JP = '＠';
+
     private final EditText editText;
 
     /* Default limit of 13 characters to evaluate after the '@' symbol. */
@@ -49,33 +52,41 @@ class MentionCheckerLogic {
 
         String queryToken = null;
 
+        char token;
+
         // perform a search if the {@link EditText} has an '@' symbol.
-        if (StringUtils.contains(intput, "@")) {
-            final int cursorPosition = editText.getSelectionStart();
-            final String allTextBeforeCursor = intput.substring(0, cursorPosition);
-            final String allTextAfterCursor = intput.substring(cursorPosition, intput.length());
+        if (StringUtils.contains(intput, AT_EN)) {
+            token = AT_EN;
+        } else if(StringUtils.contains(intput, AT_JP)) {
+            token = AT_JP;
+        } else {
+            return queryToken;
+        }
 
-            // If the user tap in the middle of a word, the queryToken will include the
-            // full word. So we get the rest of the word until the end of the string
-            // or until we found a space
-            final String remainingWord = StringUtils.substringBefore(allTextAfterCursor, " ");
-            final String AllTextBeforeWithFullWord = allTextBeforeCursor + remainingWord;
+        final int cursorPosition = editText.getSelectionStart();
+        final String allTextBeforeCursor = intput.substring(0, cursorPosition);
+        final String allTextAfterCursor = intput.substring(cursorPosition, intput.length());
 
-            String providedSearchText;
+        // If the user tap in the middle of a word, the queryToken will include the
+        // full word. So we get the rest of the word until the end of the string
+        // or until we found a space
+        final String remainingWord = StringUtils.substringBefore(allTextAfterCursor, " ");
+        final String AllTextBeforeWithFullWord = allTextBeforeCursor + remainingWord;
 
-            int index = AllTextBeforeWithFullWord.lastIndexOf(" @");
-            if(index != -1) {
-                // Case "@Name how you @d" Will match the last "@d"
-                providedSearchText = StringUtils.substringAfterLast(AllTextBeforeWithFullWord, " @");
-            } else {
-                // Case "@@name" Will remove the first '@'
-                providedSearchText = AllTextBeforeWithFullWord.substring(1);;
-            }
+        String providedSearchText;
 
-            // check search text is within <code>maxCharacters</code> and begins with a
-            if(searchIsWithinMaxChars(providedSearchText, maxCharacters)) {
-                queryToken = providedSearchText;
-            }
+        int index = AllTextBeforeWithFullWord.lastIndexOf(" "+token);
+        if(index != -1) {
+            // Case "@Name how you @d" Will match the last "@d"
+            providedSearchText = StringUtils.substringAfterLast(AllTextBeforeWithFullWord, " "+token);
+        } else {
+            // Case "@@name" Will remove the first '@'
+            providedSearchText = AllTextBeforeWithFullWord.substring(1);;
+        }
+
+        // check search text is within <code>maxCharacters</code> and begins with a
+        if(searchIsWithinMaxChars(providedSearchText, maxCharacters)) {
+            queryToken = providedSearchText;
         }
 
         return queryToken;
@@ -141,7 +152,7 @@ class MentionCheckerLogic {
                 if(StringUtils.contains(text, " ")) {
                     text = StringUtils.substringAfterLast(text, " ");
                 }
-                return StringUtils.startsWith(text, "@");
+                return AT_EN == text.charAt(0) || AT_JP == text.charAt(0);
             }
         }
         return false;

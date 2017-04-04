@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.percolate.mentions.MentionCheckerLogic.AT_EN;
+import static com.percolate.mentions.MentionCheckerLogic.AT_JP;
+
 /**
  * Insert and highlights a {@link Mentionable} in the {@link EditText}. All {@link Mentionable}s
  * are appended to the <code>mentions</code> array. The {@link Mentionable}'s offset and length
@@ -89,7 +92,7 @@ class MentionInsertionLogic {
         final int cursorPosition = editText.getSelectionEnd();
         final String text = editText.getText().toString();
         final String textBefore = text.substring(0, cursorPosition);
-        final int index = textBefore.lastIndexOf(" @");
+        final int index = Math.max(textBefore.lastIndexOf(" "+AT_EN), textBefore.lastIndexOf(" "+AT_JP));
         final int start = index == -1 ? 0 : index -1; // @ is first otherwise Remove space
 
         final String allTextAfterCursor = text.substring(cursorPosition, text.length());
