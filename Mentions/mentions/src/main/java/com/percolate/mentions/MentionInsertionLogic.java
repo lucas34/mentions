@@ -93,8 +93,14 @@ class MentionInsertionLogic {
         final String text = editText.getText().toString();
         final String textBefore = text.substring(0, cursorPosition);
         final int index = Math.max(textBefore.lastIndexOf(" "+AT_EN), textBefore.lastIndexOf(" "+AT_JP));
-        final int start = index == -1 ? 0 : index + 1; // @ is first otherwise keep space
-
+        int start;
+        if(index == -1) {
+            // No space with @ find how many characteres before in case the user tap name@
+            start = Math.max(textBefore.indexOf(AT_EN), textBefore.indexOf(AT_JP));
+        } else {
+            // Keep the " "@
+            start = index + 1;
+        }
         final String allTextAfterCursor = text.substring(cursorPosition, text.length());
 
         final String remainingWord = StringUtils.substringBefore(allTextAfterCursor, " ");
