@@ -81,7 +81,14 @@ class MentionCheckerLogic {
             providedSearchText = StringUtils.substringAfterLast(AllTextBeforeWithFullWord, " "+token);
         } else {
             // Case "@@name" Will remove the first '@'
-            providedSearchText = AllTextBeforeWithFullWord.substring(1);;
+            // Check if there is not charactere before;
+            int tokenPosition = AllTextBeforeWithFullWord.indexOf(token);
+            if(tokenPosition != 0) {
+                // First charactere is not the @
+                return null;
+            } else {
+                providedSearchText = AllTextBeforeWithFullWord;
+            }
         }
 
         // check search text is within <code>maxCharacters</code> and begins with a
