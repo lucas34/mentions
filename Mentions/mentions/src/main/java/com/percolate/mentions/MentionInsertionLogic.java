@@ -93,7 +93,7 @@ class MentionInsertionLogic {
         final String text = editText.getText().toString();
         final String textBefore = text.substring(0, cursorPosition);
         final int index = Math.max(textBefore.lastIndexOf(" "+AT_EN), textBefore.lastIndexOf(" "+AT_JP));
-        final int start = index == -1 ? 0 : index -1; // @ is first otherwise Remove space
+        final int start = index == -1 ? 0 : index + 1; // @ is first otherwise keep space
 
         final String allTextAfterCursor = text.substring(cursorPosition, text.length());
 
