@@ -152,7 +152,9 @@ class MentionCheckerLogic {
                 if(StringUtils.contains(text, " ")) {
                     text = StringUtils.substringAfterLast(text, " ");
                 }
-                return AT_EN == text.charAt(0) || AT_JP == text.charAt(0);
+                if(text != null && text.length() > 0) {
+                    return AT_EN == text.charAt(0) || AT_JP == text.charAt(0);
+                }
             }
         }
         return false;
