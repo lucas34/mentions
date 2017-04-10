@@ -87,7 +87,7 @@ class MentionCheckerLogic {
                 // First charactere is not the @
                 return null;
             } else {
-                providedSearchText = AllTextBeforeWithFullWord;
+                providedSearchText = StringUtils.substringAfterLast(AllTextBeforeWithFullWord, ""+token);
             }
         }
 
