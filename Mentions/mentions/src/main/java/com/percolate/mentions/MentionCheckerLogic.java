@@ -8,8 +8,10 @@ import android.widget.EditText;
  */
 class MentionCheckerLogic {
 
-    static final char AT_EN = '@';
-    static final char AT_JP = '＠';
+    static final char[]  SEPARATORS = new char[] {' ', '\n'}; // Will only work if the char is 1 length
+    static final char[]  TOKENS = new char[] {'@', '＠'};
+
+    static final char SPACE_EN = ' ';
 
     private final EditText editText;
 
@@ -49,39 +51,32 @@ class MentionCheckerLogic {
      */
     String doMentionCheck() {
         final String intput = editText.getText().toString();
+        final int cursorPosition = editText.getSelectionStart();
 
-        String queryToken = null;
-
-        char token;
-
-        // perform a search if the {@link EditText} has an '@' symbol.
-        if (StringUtils.contains(intput, AT_EN)) {
-            token = AT_EN;
-        } else if(StringUtils.contains(intput, AT_JP)) {
-            token = AT_JP;
-        } else {
-            return queryToken;
+        if(!StringUtils.contains(intput, TOKENS)) {
+            // The '@' is not in the text skip
+            return null;
         }
 
-        final int cursorPosition = editText.getSelectionStart();
         final String allTextBeforeCursor = intput.substring(0, cursorPosition);
         final String allTextAfterCursor = intput.substring(cursorPosition, intput.length());
 
         // If the user tap in the middle of a word, the queryToken will include the
         // full word. So we get the rest of the word until the end of the string
         // or until we found a space
-        final String remainingWord = StringUtils.substringBefore(allTextAfterCursor, " ");
+        final String remainingWord = StringUtils.substringBefore(allTextAfterCursor, SEPARATORS);
         final String AllTextBeforeWithFullWord = allTextBeforeCursor + remainingWord;
 
         String providedSearchText;
 
-        int index = AllTextBeforeWithFullWord.lastIndexOf(" "+token);
+        // perform a search if the {@link EditText} has an '@' symbol.
+        int index = StringUtils.lastIndexMatchOf(AllTextBeforeWithFullWord, SEPARATORS, TOKENS);
         if(index != -1) {
-            // Case "@Name how you @d" Will match the last "@d"
-            providedSearchText = StringUtils.substringAfterLast(AllTextBeforeWithFullWord, " "+token);
+            providedSearchText = AllTextBeforeWithFullWord.substring(index + 2, AllTextBeforeWithFullWord.length()); // TODO remove hardcoded 2
         } else {
             // Case "@@name" Will remove the first '@'
             // Check if there is not charactere before;
+            char token = StringUtils.findLastToken(AllTextBeforeWithFullWord, TOKENS);
             int tokenPosition = AllTextBeforeWithFullWord.indexOf(token);
             if(tokenPosition != 0) {
                 // First charactere is not the @
@@ -93,10 +88,10 @@ class MentionCheckerLogic {
 
         // check search text is within <code>maxCharacters</code> and begins with a
         if(searchIsWithinMaxChars(providedSearchText, maxCharacters)) {
-            queryToken = providedSearchText;
+            return providedSearchText;
         }
 
-        return queryToken;
+        return null;
     }
 
     /**
@@ -156,11 +151,13 @@ class MentionCheckerLogic {
             //Multiple text is not highlighted
             if (editText.length() >= start) {
                 String text = editText.getText().toString().substring(0, start);
-                if(StringUtils.contains(text, " ")) {
-                    text = StringUtils.substringAfterLast(text, " ");
-                }
+                text = StringUtils.substringAfterLast(text, SEPARATORS);
                 if(text != null && text.length() > 0) {
-                    return AT_EN == text.charAt(0) || AT_JP == text.charAt(0);
+                    for (int i = 0, tokensLength = TOKENS.length; i < tokensLength; i++) {
+                        if(text.charAt(0) == TOKENS[i]) {
+                            return true;
+                        }
+                    }
                 }
             }
         }

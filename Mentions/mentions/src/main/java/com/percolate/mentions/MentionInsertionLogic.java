@@ -11,8 +11,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.percolate.mentions.MentionCheckerLogic.AT_EN;
-import static com.percolate.mentions.MentionCheckerLogic.AT_JP;
+import static com.percolate.mentions.MentionCheckerLogic.SEPARATORS;
+import static com.percolate.mentions.MentionCheckerLogic.SPACE_EN;
+import static com.percolate.mentions.MentionCheckerLogic.TOKENS;
 
 /**
  * Insert and highlights a {@link Mentionable} in the {@link EditText}. All {@link Mentionable}s
@@ -92,24 +93,25 @@ class MentionInsertionLogic {
         final int cursorPosition = editText.getSelectionEnd();
         final String text = editText.getText().toString();
         final String textBefore = text.substring(0, cursorPosition);
-        final int index = Math.max(textBefore.lastIndexOf(" "+AT_EN), textBefore.lastIndexOf(" "+AT_JP));
+
         int start;
-        if(index == -1) {
-            // No space with @ find how many characteres before in case the user tap name@
-            start = Math.max(textBefore.indexOf(AT_EN), textBefore.indexOf(AT_JP));
+        if(StringUtils.lastIndexOf(textBefore, TOKENS) == 0) {
+            // The at is the first char
+            start = 0;
         } else {
-            // Keep the " "@
-            start = index + 1;
+            // Keep the space before the At or the new line
+            start = StringUtils.lastIndexMatchOf(textBefore, SEPARATORS, TOKENS) + 1;
         }
+
         final String allTextAfterCursor = text.substring(cursorPosition, text.length());
 
-        final String remainingWord = StringUtils.substringBefore(allTextAfterCursor, " ");
+        final String remainingWord = StringUtils.substringBefore(allTextAfterCursor, SEPARATORS);
         final int deleteUntil = cursorPosition + remainingWord.length();
 
         if (start != -1) {
             final int newCursorPosition = start + mention.getMentionName().length() + 1;
             editText.getText().delete(start, deleteUntil);
-            editText.getText().insert(start, mention.getMentionName() + " ");
+            editText.getText().insert(start, mention.getMentionName() + SPACE_EN);
 
             // Fix bug on LG G3 phone, where EditText messes up when using insert() method.
             final int originalInputType = editText.getInputType();

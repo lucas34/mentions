@@ -1,5 +1,7 @@
 package com.percolate.mentions;
 
+import android.support.annotation.Nullable;
+
 /**
  * String utility methods.
  *
@@ -67,6 +69,44 @@ class StringUtils {
             }
         }
         return true;
+    }
+
+    static char findLastToken(String str, char... token) {
+        int index = INDEX_NOT_FOUND;
+        char match = 0;
+
+        for(char c : token) {
+            int i = str.lastIndexOf(c);
+            if(i > index) {
+                index = i;
+                match = c;
+            }
+        }
+
+        return match;
+    }
+
+    static int lastIndexOf(String str, char... token) {
+        int index = INDEX_NOT_FOUND;
+
+        for (int i = 0, tokenLength = token.length; i < tokenLength; i++) {
+            index = Math.max(index, str.lastIndexOf(token[i]));
+        }
+
+        return index;
+    }
+
+    static int lastIndexMatchOf(String str, char[] separator, char[] token) {
+        int index = INDEX_NOT_FOUND;
+
+        for (int i = 0, separatorLength = separator.length; i < separatorLength; i++) {
+            for (int j = 0, tokenLength = token.length; j < tokenLength; j++) {
+                index = Math.max(index, str.lastIndexOf("" + separator[i] + token[j]));
+            }
+
+        }
+
+        return index;
     }
 
     /**
@@ -239,6 +279,16 @@ class StringUtils {
         return contains(seq, ""+searchChar);
     }
 
+    static boolean contains(final CharSequence seq, final char... searchChar) {
+        for(char c: searchChar) {
+            if(contains(seq, c)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     static boolean contains(final CharSequence seq, final CharSequence searchSeq) {
         if (seq == null || searchSeq == null) {
             return false;
@@ -289,6 +339,24 @@ class StringUtils {
         return str.substring(pos + separator.length());
     }
 
+    static String substringAfterLast(final String str, final char... separator) {
+        if(separator == null || separator.length == 0) {
+            return str;
+        }
+
+        int index = INDEX_NOT_FOUND;
+
+        for (int i = 0, separatorLength = separator.length; i < separatorLength; i++) {
+            final int pos = str.lastIndexOf(separator[i]);
+            index = Math.max(index, pos);
+        }
+
+        if (index == INDEX_NOT_FOUND || index == str.length() - 1) {
+            return EMPTY;
+        }
+        return str.substring(index + 1); // 1 is the size of the charactere
+    }
+
     /**
      * <p>Gets the substring before the first occurrence of a separator.
      * The separator is not returned.</p>
@@ -316,18 +384,24 @@ class StringUtils {
      *  {@code null} if null String input
      * @since 2.0
      */
-    public static String substringBefore(String str, String separator) {
-        if (isEmpty(str) || separator == null) {
+    public static String substringBefore(String str, char... separator) {
+        if (separator == null) {
             return str;
         }
-        if (separator.length() == 0) {
+        if (separator.length == 0) {
             return EMPTY;
         }
-        int pos = str.indexOf(separator);
-        if (pos == INDEX_NOT_FOUND) {
-            return str;
+
+        int index = INDEX_NOT_FOUND;
+
+        for (int i = 0, separatorLength = separator.length; i < separatorLength; i++) {
+            int pos = str.indexOf(separator[i]);
+            if(pos != INDEX_NOT_FOUND) {
+                index = Math.max(index, pos);
+            }
         }
-        return str.substring(0, pos);
+
+        return index == INDEX_NOT_FOUND ? str : str.substring(0, index);
     }
 
     /**
