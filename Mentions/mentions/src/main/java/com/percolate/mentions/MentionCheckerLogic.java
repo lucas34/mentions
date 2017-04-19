@@ -8,7 +8,7 @@ import android.widget.EditText;
  */
 class MentionCheckerLogic {
 
-    static final char[]  SEPARATORS = new char[] {' ', '\n'}; // Will only work if the char is 1 length
+    static final char[]  SEPARATORS = new char[] {' ', '\n', '　'}; // Will only work if the char is 1 length
     static final char[]  TOKENS = new char[] {'@', '＠'};
 
     static final char SPACE_EN = ' ';
