@@ -66,7 +66,7 @@ public class Mentions {
      * @param context   Context     Although not used in the library, it passed for future use.
      * @param editText  EditText    The EditText that will have @ mention capability.
      */
-    private Mentions(final Context context, final EditText editText) {
+    /* package */ Mentions(final Context context, final EditText editText) {
         this.context = context;
         this.editText = editText;
 
@@ -218,7 +218,7 @@ public class Mentions {
     /**
      * If the user sets the cursor after an '@', then perform a mention.
      */
-    private void hookupOnClickListener() {
+    /* package */ void hookupOnClickListener() {
         editText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -235,7 +235,7 @@ public class Mentions {
     /**
      * Set a {@link TextWatcher} for mentions.
      */
-    private void hookupInternalTextWatcher() {
+    /* package */ void hookupInternalTextWatcher() {
         editText.addTextChangedListener(new TextWatcher() {
 
             @Override

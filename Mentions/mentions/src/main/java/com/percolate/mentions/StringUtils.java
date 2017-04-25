@@ -427,33 +427,4 @@ class StringUtils {
         return cs == null || cs.length() == 0;
     }
 
-    /**
-     * <p>Finds the last index within a CharSequence, handling {@code null}.
-     * This method uses {@link String#lastIndexOf(String)} if possible.</p>
-     *
-     * <p>A {@code null} CharSequence will return {@code -1}.</p>
-     *
-     * <pre>
-     * StringUtils.lastIndexOf(null, *)          = -1
-     * StringUtils.lastIndexOf(*, null)          = -1
-     * StringUtils.lastIndexOf("", "")           = 0
-     * StringUtils.lastIndexOf("aabaabaa", "a")  = 7
-     * StringUtils.lastIndexOf("aabaabaa", "b")  = 5
-     * StringUtils.lastIndexOf("aabaabaa", "ab") = 4
-     * StringUtils.lastIndexOf("aabaabaa", "")   = 8
-     * </pre>
-     *
-     * @param seq  the CharSequence to check, may be null
-     * @param searchSeq  the CharSequence to find, may be null
-     * @return the last index of the search String,
-     *  -1 if no match or {@code null} string input
-     * @since 2.0
-     * @since 3.0 Changed signature from lastIndexOf(String, String) to lastIndexOf(CharSequence, CharSequence)
-     */
-    static int lastIndexOf(final CharSequence seq, final CharSequence searchSeq) {
-        if (seq == null || searchSeq == null) {
-            return INDEX_NOT_FOUND;
-        }
-        return CharSequenceUtils.lastIndexOf(seq, searchSeq, seq.length());
-    }
 }
